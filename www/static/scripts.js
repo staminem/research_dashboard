@@ -124,10 +124,12 @@ function aradarPlot() {
 
 function abarPlot() {
     var barPlot = document.getElementById("barPlot");
-    if (barPlot.style.display == "block"){
-        barPlot.style.display = "none";
+    if (barPlot.style.width == "80%"){
+        barPlot.style.width = "0%";
+        barPlot.style.height = "0px";
     }else{
-        barPlot.style.display = "block";
+        barPlot.style.width = "80%";
+        barPlot.style.height = "800px"
     }
 }
 

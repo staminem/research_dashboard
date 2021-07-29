@@ -39,7 +39,7 @@
     </div>
     <button type="button" class="btn btn-primary" onclick="aradarPlot()">Toggle Radar Plot</button>
     <button type="button" class="btn btn-primary" onclick="abarPlot()">Toggle Bar Plot</button>
-    <iframe id="radarPlot" name="radarPlot" src="{{ url_for('static', filename='dashboard_plot.html') }}" width="0%", height="800px"></iframe>
+    <iframe id="radarPlot" name="radarPlot" src="{{ url_for('static', filename='dashboard_plot.html') }}" width="0%", height="0px"></iframe>
     <br>
-    <iframe id="barPlot" name="barPlot" src="{{ url_for('static', filename='bar_plot.html') }}" width="0%", height="800px"></iframe>
+    <iframe id="barPlot" name="barPlot" src="{{ url_for('static', filename='bar_plot.html') }}" width="0%", height="0px"></iframe>
 {% endblock %}
