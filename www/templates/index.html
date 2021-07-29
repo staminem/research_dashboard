@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lan="en">
+    <head>
+        <br>
+        <title>Research Dashboard</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.3.1/jszip-2.5.0/dt-1.10.25/af-2.3.7/b-1.7.1/b-colvis-1.7.1/b-html5-1.7.1/b-print-1.7.1/cr-1.5.4/date-1.1.0/fc-3.3.3/fh-3.1.9/kt-2.6.2/r-2.2.9/datatables.min.css"/>
+        <link rel="stylesheet" href="https://rawcdn.githack.com/darkterminal/tagin/6fa2863c13aa1841f33cf6dcbbf266c92fbf5412/dist/css/tagin.min.css">
+        <script src="https://rawcdn.githack.com/darkterminal/tagin/6fa2863c13aa1841f33cf6dcbbf266c92fbf5412/dist/js/tagin.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.3.1/jszip-2.5.0/dt-1.10.25/af-2.3.7/b-1.7.1/b-colvis-1.7.1/b-html5-1.7.1/b-print-1.7.1/cr-1.5.4/date-1.1.0/fc-3.3.3/fh-3.1.9/kt-2.6.2/r-2.2.9/datatables.min.js"></script>
+        <script type="text/javascript"> function spinner() {document.getElementsById("img").style.display = "block";}</script>
+        <script type="text/javascript" src="{{ url_for('static', filename='tooltips.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='scripts.js') }}"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    <body>
+    <div class="container">
+        <h2>Research Dashboard</h2>
+        <br>
+        <h4>Organise scientific articles by showing what matters to you</h4>
+    </div>
+    <br>
+    <div class="container">
+    <p>Add papers from PubMed that are of interest to you by entering their PubMed ID in the below form to compare them in an overview. A table will be generated containing key information on each paper.<br><br>
+        <b>Table Functionality</b><br>
+    You can sort the table by clicking on the respective column header. Click on the "Abstract" button in the rightmost column to see the abstract of the respective paper pop up. You can also export data using the buttons on top and toggle
+        the visibility of each individual column.<br><br>
+        <b>Plots</b><br>
+    Scroll to the bottom of the page to display generated plots. They can be interacted with to change the view (double-click to isolate a trace, single-click to toggle visibility etc.).
+        Since measures of varying units are compared, the traces on the plots are normalised, meaning the highest score within the range equals 1 and the lowest one equals 0.<br><br>
+            Note that a valid email address as well as a name for your project are necessary for some of the functions that are working in the background.</p>
+    </div>
+    <br>
+    <div class="container">
+    <form class="needs-validation" id="form" name="form" novalidate action="{{ url_for('process_input') }}" method="POST" onformdata="spinner(), showModal()" onsubmit="">
+        <div class="form-group row">
+            <label for="user_email" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" name="user_email" id="user_email" placeholder="username@domain.com" value="{{ request.form['user_email'] }}"style="w-50" required>
+                <small id="user_emailhelp" class="form-text text-muted">Enter a valid email address</small>
+                <div class="invalid-feedback">Please provide a valid email address!</div>
+            </div>
+        </div>
+        <br>
+        <div class="form-group row">
+            <label for="user_tool" class="col-sm-2 col-form-label">User Tool</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="user_tool" id="user_tool" placeholder="my_research_project" value="{{ request.form['user_tool'] }}" required>
+                <small id="user_toolhelp" class="form-text text-muted">Choose any name for your research project. Separate words with underscores (_).</small>
+                <div class="invalid-feedback">Please provide a project name, make sure to separate single words with underscores!</div>
+            </div>
+        </div>
+        <br>
+          <div class="form-group row">
+            <label for="pmids" class="col-sm-2 col-form-label">PubMed IDs</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control tagin" id="pmids" name="pmids" data-placeholder="Enter a Pubmed ID and press space..." data-separator=" " value="{{ request.form['pmids'] }}" required>
+                <small id="pmidhelp" class="form-text text-muted">Enter any PubMed ID and press space to add it to the list</small>
+                <div class="invalid-feedback">Please enter at least one valid PubMed ID!</div>
+            </div>
+        </div>
+        <br>
+        <div class="form-group row">
+            <label for="keywords" class="col-sm-2 col-form-label">Keywords</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control tagin" id="keywords" name="keywords" data-placeholder="Enter a keyword and press space..." data-separator=" " value="{{ request.form['keywords'] }}">
+                <small id="keywordhelp" class="form-text text-muted">Enter keywords relevant to your project and press space after each one to add it to the list</small>
+            </div>
+        </div>
+        <br>
+        <div class="container">
+            <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Submit" onclick="showPic()">
+        </div>
+    </form>
+    </div>
+    <br>
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary" role="status" id="img" style="width: 5rem; height: 5rem; display:none">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="loadingModalTitle">Data successfully transmitted</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>We specifically did not want to use a progress bar, as they can be misleading.
+                Enjoy these random spurious correlations instead while you are waiting for the table to be created.
+            Loading the data may take several minutes, depending on the number of papers added.<br><i>(credit: https://www.tylervigen.com/spurious-correlations)</i></p>
+              <br>
+              <img src="" class="img-fluid" id="picture" alt="Picture failed to load">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="showPic()">Show another</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container" id="datatable" name="datatable">
+        {% block content %}{% endblock %}
+    </div>
+    </body>
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+            <span class="text-muted">Stefan Girsberger, University College London, University of Manchester <a href="mailto:girsberger.stefan@gmail.com?subject=Research Dashboard">girsberger.stefan@gmail.com</a>, supervised by Alan Davies, University of Manchester</span>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script>$(document).ready(function(){  $('#myTable2').DataTable( { dom: 'Bfrtip', buttons: [ 'copy', 'csv', 'excel', 'pdf', 'print', 'colvis' ] } );});</script>
+    <script>(function() {  'use strict';  window.addEventListener('load', function() {        var forms = document.getElementsByClassName('needs-validation');        var validation = Array.prototype.filter.call(forms, function(form) {      form.addEventListener('submit', function(event) {        if (form.checkValidity() === false) {          event.preventDefault();          event.stopPropagation();        }        form.classList.add('was-validated');      }, false);    });  }, false);})();</script>
+    <script type="text/javascript" src="{{ url_for('static', filename='tooltips.js') }}"></script>
+    <script>for (const el of document.querySelectorAll('.tagin')) {tagin(el)}</script>
+</html>
