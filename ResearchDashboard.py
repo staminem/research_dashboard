@@ -15,7 +15,6 @@ import pandas as pd
 import geocoder
 from fuzzywuzzy import fuzz
 import plotly.graph_objects as go
-import time
 
 def create_icite_dict(pmids):
     session = requests.Session()
@@ -33,8 +32,8 @@ def create_icite_dict(pmids):
     df_1 = pd.DataFrame(icite_dict)
     return df_1
 
-def create_esummary_file(pmids):
-    Entrez.email = "girsberger.stefan@gmail.com"
+def create_esummary_file(pmids, user_email):
+    Entrez.email = user_email
     handle = Entrez.esummary(db="pubmed",
                            id= ",".join(pmids),
                            retmode="text")
@@ -107,7 +106,7 @@ def create_efetch_file(pmids, user_email):
 
 def combine_dataframes(pmids, user_email):
     df_1 = create_icite_dict(pmids)
-    df_2 = create_esummary_file(pmids)
+    df_2 = create_esummary_file(pmids, user_email)
     df_3 = create_efetch_file(pmids, user_email)
     esummary_file_combined = pd.concat([df_2,df_1,df_3], axis=1)
     esummary_file_combined_renamed = esummary_file_combined.rename(columns={'Id' :'Pubmed ID',
@@ -203,8 +202,8 @@ def article_age(combined_dataframes):
         combined_dataframes.loc[idx, 'Article age (years)'] = article_age
     return combined_dataframes
 
-def first_author_rcr(combined_dataframes):
-    tic1 = time.perf_counter()
+def first_author_rcr(combined_dataframes, user_email):
+    Entrez.email = user_email
     session = requests.Session()
     retry = Retry(connect=3, backoff_factor=0.1)
     adapter = HTTPAdapter(max_retries=retry)
@@ -215,11 +214,9 @@ def first_author_rcr(combined_dataframes):
         first_author = author[0]
         handle = Entrez.esearch(db="pubmed", term=first_author + "[author]", retmax=500)
         record = Entrez.read(handle)
-        handle.close()
-        toc1 = time.perf_counter()
+        """handle.close()"""
         pmids = record['IdList']
         icite_dict = []
-        tic2 = time.perf_counter()
         for x in pmids:
             response = session.get(
                 "/".join([
@@ -232,8 +229,6 @@ def first_author_rcr(combined_dataframes):
             icite_dict.append(pub)
         df_icite_dict = pd.DataFrame.from_dict(icite_dict)
         icite_list = []
-        toc2 = time.perf_counter()
-        tic3 = time.perf_counter()
         try:
             for x in df_icite_dict['relative_citation_ratio']:
                 if x is not None and x >0:
@@ -241,13 +236,10 @@ def first_author_rcr(combined_dataframes):
         except KeyError:
             icite_list.append(0)
         combined_dataframes.loc[idx, 'First Author RCR'] = round(sum(icite_list), 2)
-        toc3 = time.perf_counter()
-        print(f"Entrez e-search handle {toc1 - tic1:0.4f}")
-        print(f"icite_dict {toc2 - tic2:0.4f}")
-        print(f"icite_list {toc3 - tic3:0.4f}")
     return combined_dataframes
 
-def last_author_rcr(combined_dataframes):
+def last_author_rcr(combined_dataframes, user_email):
+    Entrez.email = user_email
     session = requests.Session()
     retry = Retry(connect=3, backoff_factor=0.1)
     adapter = HTTPAdapter(max_retries=retry)
@@ -258,7 +250,7 @@ def last_author_rcr(combined_dataframes):
         last_author = author[-1]
         handle = Entrez.esearch(db="pubmed", term=last_author + "[author]", retmax=500)
         record = Entrez.read(handle)
-        handle.close()
+        """handle.close()"""
         pmids = record['IdList']
         icite_dict = []
         for x in pmids:
