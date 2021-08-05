@@ -345,7 +345,7 @@ def radar_plot(combined_dataframes, pmids):
                 normalised_for_score['Keyword match ratio (%)'].iloc[i]
                 ], theta=categories, fill='toself', name=str(" ".join(word_tokenize(combined_dataframes['Title'].iloc[i])[0:4]) + "...")))
         fig.update_layout(polar=dict(radialaxis=dict(visible=True,range=[0,1])),showlegend=True)
-    fig.write_html("/Users/stefangirsberger/PycharmProjects/pythonProject/www/static/dashboard_plot.html", full_html=False, include_plotlyjs='cdn')
+    fig.write_html("/Users/stefangirsberger/PycharmProjects/ResearchDashboard/www/static/dashboard_plot.html", full_html=False, include_plotlyjs='cdn')
 
 def bar_plot(combined_dataframes, pmids):
     normalised_for_score = pd.concat([
@@ -383,4 +383,4 @@ def bar_plot(combined_dataframes, pmids):
                 ],
         name=str(" ".join(word_tokenize(combined_dataframes['Title'].iloc[i])[0:4]) + "...")))
         fig.update_layout(barmode='group', xaxis_tickangle=-45)
-    fig.write_html("/Users/stefangirsberger/PycharmProjects/pythonProject/www/static/bar_plot.html", full_html=False, include_plotlyjs='cdn')
+    fig.write_html("/Users/stefangirsberger/PycharmProjects/ResearchDashboard/www/static/bar_plot.html", full_html=False, include_plotlyjs='cdn')
