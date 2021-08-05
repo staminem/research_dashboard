@@ -301,7 +301,7 @@ def keyword_match(combined_dataframes, keyword_ratio, keywords):
                             keyword_match = fuzz.ratio(mesh_word.lower(), key_word.lower())
                             if keyword_match >= keyword_ratio:
                                 keyword_matches.append(keyword_match)
-                    combined_dataframes.loc[idx, "Keyword match ratio (%)"] = round((len(keyword_matches)/len(key_words)*100),1)
+                    combined_dataframes.loc[idx, "Keyword match ratio (%)"] = round((len(keyword_matches)/len(key_words) * 100),1)
                 else:
                     combined_dataframes.loc[idx, "Keyword match ratio (%)"] = 0
             else:

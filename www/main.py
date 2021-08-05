@@ -84,7 +84,6 @@ def datatable(user_email, user_tool, pmids, keywords):
 
 @app.route('/process_input',methods=['POST'])
 def process_input():
-    form = request.form
     user_email = request.form['user_email']
     user_tool = request.form['user_tool']
     pmids = request.form['pmids'].split(" ")
