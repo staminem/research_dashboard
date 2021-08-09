@@ -34,13 +34,13 @@ def datatable(user_email, user_tool, pmids, keywords):
                                                    'Article age (years)',
                                                    'Impact Factor',
                                                    'Relative Citation Ratio',
-                                               'First Author RCR',
-                                               'Last Author RCR',
-                                               'Keyword match ratio (%)',
-                                               'Distance to me (km)',
-                                               'MeSH Terms',
-                                               'DOI',
-                                               'Abstract']]
+                                                    'First Author RCR',
+                                                    'Last Author RCR',
+                                                    'Keyword match ratio (%)',
+                                                    'Distance to me (km)',
+                                                    'MeSH Terms',
+                                                    'DOI',
+                                                    'Abstract']]
     for idx in combined_dataframes.index:
         title = combined_dataframes.loc[idx, 'Title']
         if not title is None:

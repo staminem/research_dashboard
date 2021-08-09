@@ -32,7 +32,6 @@ def create_icite_dict(pmids):
 
 def create_esummary_file(pmids, user_email):
     Entrez.email = user_email
-    Entrez.api_key = "e82f072135e559b717a63d0f4acd6cda4c08"
     handle = Entrez.esummary(db="pubmed",
                            id= ",".join(pmids),
                            retmode="text")
@@ -42,7 +41,6 @@ def create_esummary_file(pmids, user_email):
 
 def create_efetch_file(pmids, user_email):
     Entrez.email = user_email
-    Entrez.api_key = "e82f072135e559b717a63d0f4acd6cda4c08"
     handle = Entrez.efetch(db='pubmed', id=pmids, rettype='medline', retmode='text')
     records = Medline.parse(handle)
     record_list = []
@@ -212,7 +210,6 @@ def first_author_rcr(combined_dataframes, user_email):
         author = combined_dataframes.loc[idx, 'Authors']
         first_author = author[0]
         Entrez.email = user_email
-        Entrez.api_key = "e82f072135e559b717a63d0f4acd6cda4c08"
         handle = Entrez.esearch(db="pubmed", term=first_author + "[author]", retmax=500)
         record = Entrez.read(handle)
         pmids = record['IdList']
@@ -248,7 +245,6 @@ def last_author_rcr(combined_dataframes, user_email):
         author = combined_dataframes.loc[idx, 'Authors']
         last_author = author[-1]
         Entrez.email = user_email
-        Entrez.api_key = "e82f072135e559b717a63d0f4acd6cda4c08"
         handle = Entrez.esearch(db="pubmed", term=last_author + "[author]", retmax=500)
         record = Entrez.read(handle)
         pmids = record['IdList']
