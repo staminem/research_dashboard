@@ -28,6 +28,7 @@ def create_icite_dict(pmids):
         icite_json = response.json()
         icite_dict.append(icite_json)
     df_1 = pd.DataFrame(icite_dict)
+    df_1 = df_1[['year','relative_citation_ratio']]
     return df_1
 
 def create_esummary_file(pmids, user_email):
@@ -37,6 +38,7 @@ def create_esummary_file(pmids, user_email):
                            retmode="text")
     records = Entrez.parse(handle)
     df_2 = pd.DataFrame.from_dict(records)
+    df_2 = df_2[['Id','Title','DOI','FullJournalName','LangList','PubTypeList']]
     return df_2
 
 def create_efetch_file(pmids, user_email):
@@ -55,51 +57,16 @@ def create_efetch_file(pmids, user_email):
         df.insert(11, 'AB', "Not found", allow_duplicates=False)
     if 'FAU' not in df:
         df.insert(12, 'FAU', "Not found", allow_duplicates=False)
-    df_renamed = df.rename(columns={'PMID':'Pubmed ID',
-                   'OWN':'Owner',
-                   'STAT':'Status',
-                   'DCOM':'Date Completed',
-                   'LR':'Date last revised',
-                   'IS':'ISSN',
-                   'VI':'Volume',
-                   'IP':'Issue',
-                   'DP':'Date of Publication',
-                   'TI':'Title',
-                   'PG':'Pagination',
-                   'LID':'Location Identifier',
+    df_renamed = df.rename(columns={
                    'AB':'Abstract',
-                   'FAU':'Full Authors',
-                   'AU':'Author',
+                   'FAU':'Authors',
                    'AD':'Affiliation',
-                   'LA':'Language',
-                   'PT':'Publication Type',
-                   'PL':'Place of Publication',
-                   'TA':'Journal Title Abbreviation',
-                   'JT':'Journal Title',
-                   'JID':'NLM Unique ID',
-                   'RN':'Registry Number/EC Number',
-                   'CIN':'Comment in',
                    'MH':'MeSH Terms',
-                   'EDAT':'Entrez Date',
-                   'MHDA':'MeSH Date',
-                   'CRDT':'Create Date',
-                   'PHST':'Publication History Status',
-                   'AID':'Article Identifier',
-                   'PST':'Publication Status',
-                   'SO':'Source',
-                   'CI':'Copyright Information',
-                   'DEP':'Date of Electronic Publication',
-                   'SB':'Subset',
-                   'AUID':'Author Identifier',
-                   'PMC':'PubMed Central Identifier',
-                   'OTO':'Other Term Owner',
-                   'OT':'Other Term',
-                   'COIS':'Conflict of Interest Statement'
                    })
     df_3 = df_renamed[['Affiliation',
                        'MeSH Terms',
                        'Abstract',
-                       'Full Authors']].fillna(0)
+                       'Authors']].fillna(0)
     return df_3
 
 def combine_dataframes(pmids, user_email):
@@ -107,20 +74,14 @@ def combine_dataframes(pmids, user_email):
     df_2 = create_esummary_file(pmids, user_email)
     df_3 = create_efetch_file(pmids, user_email)
     esummary_file_combined = pd.concat([df_2,df_1,df_3], axis=1)
-    esummary_file_combined_renamed = esummary_file_combined.rename(columns={'Id' :'Pubmed ID',
-                                                                        'Source':'Journal Abbreviated',
-                                                                        'Full Authors':'Authors',
-                                                                        'LangList':'Languages',
-                                                                        'PubTypeList':'Publication Type',
-                                                                        'FullJournalName':'Journal',
-                                                                        'year':'Year',
-                                                                        'relative_citation_ratio':'Relative Citation Ratio',
-                                                                        'citation_count':'Citation count',
-                                                                        'citations_per_year':'Citations per year',
-                                                                        'expected_citations_per_year':'Expected citations per year',
-                                                                        'field_citation_rate':'Field citation rate',
-                                                                        })
-    combined_dataframes = esummary_file_combined_renamed.drop(columns=['Citation count', 'AuthorList', 'Citations per year', 'Expected citations per year', 'Field citation rate', 'Item','PubDate','EPubDate','LastAuthor','Volume','Issue','Pages','NlmUniqueID','ISSN','ESSN','RecordStatus','PubStatus','ArticleIds','History','References','HasAbstract','PmcRefCount','ELocationID','SO','pmid','title','authors','journal','is_research_article','nih_percentile','human','animal','molecular_cellular','apt','is_clinical','provisional','x_coord','y_coord','cited_by_clin','cited_by','references','doi'], axis=1)
+    combined_dataframes = esummary_file_combined.rename(columns={
+                                                                'Id' :'Pubmed ID',
+                                                                'LangList':'Languages',
+                                                                'PubTypeList':'Publication Type',
+                                                                'FullJournalName':'Journal',
+                                                                'year':'Year',
+                                                                'relative_citation_ratio':'Relative Citation Ratio',
+                                                                })
     return combined_dataframes
 
 def calculate_distance(combined_dataframes, user_tool):

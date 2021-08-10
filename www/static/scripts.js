@@ -158,3 +158,9 @@ function showPic() {
 function showModal() {
     $('#loadingModal').modal('toggle')
 }
+
+var table = $('#myTable2').DataTable();
+
+new $.fn.dataTable.FixedHeader( table, {
+    // options
+} );
