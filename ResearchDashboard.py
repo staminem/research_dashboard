@@ -84,6 +84,15 @@ def combine_dataframes(pmids, user_email):
                                                                 })
     return combined_dataframes
 
+def create_fulltextlinks(combined_dataframes, user_email):
+    Entrez.email = user_email
+    for idx in combined_dataframes.index:
+        pmid = combined_dataframes.loc[idx, 'Pubmed ID']
+        record = Entrez.read(Entrez.elink(dbfrom="pubmed", id=pmid, cmd="prlinks"))
+        fulltextlink = record[0]['IdUrlList']['IdUrlSet'][0]['ObjUrl'][0]['Url']
+        combined_dataframes.loc[idx, 'Full text link'] = fulltextlink
+    return combined_dataframes
+
 def calculate_distance(combined_dataframes, user_tool):
     g = geocoder.ip('me')
     gc = geonamescache.GeonamesCache()
@@ -148,7 +157,7 @@ def impact_factor(combined_dataframes):
         impact_factor = IF.search(journal_text)
         if not impact_factor == None:
             impact_factor_df = pd.DataFrame.from_dict(impact_factor)
-            combined_dataframes.loc[idx, 'Impact Factor'] = impact_factor_df['factor'].iloc[-1]
+            combined_dataframes.loc[idx, 'Impact Factor'] = round(impact_factor_df['factor'].iloc[-1], 1)
         else:
             combined_dataframes.loc[idx, 'Impact Factor'] = None
     return combined_dataframes

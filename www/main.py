@@ -11,12 +11,13 @@ def index():
     return render_template('index.html')
 
 def datatable(user_email, user_tool, pmids, keywords):
-    from ResearchDashboard import create_icite_dict, create_esummary_file, create_efetch_file, combine_dataframes, calculate_distance, impact_factor, article_age, first_author_rcr, last_author_rcr, keyword_match, bar_plot, radar_plot
+    from ResearchDashboard import create_icite_dict, create_esummary_file, create_efetch_file, create_fulltextlinks, combine_dataframes, calculate_distance, impact_factor, article_age, first_author_rcr, last_author_rcr, keyword_match, bar_plot, radar_plot
     keyword_ratio = 80
     create_icite_dict(pmids)
     create_esummary_file(pmids, user_email)
     create_efetch_file(pmids, user_email)
     combined_dataframes = combine_dataframes(pmids, user_email)
+    create_fulltextlinks(combined_dataframes, user_email)
     calculate_distance(combined_dataframes, user_tool)
     impact_factor(combined_dataframes)
     article_age(combined_dataframes)
@@ -40,6 +41,7 @@ def datatable(user_email, user_tool, pmids, keywords):
                                                     'Distance to me (km)',
                                                     'MeSH Terms',
                                                     'DOI',
+                                                    'Full text link',
                                                     'Abstract']]
     for idx in combined_dataframes.index:
         title = combined_dataframes.loc[idx, 'Title']
@@ -77,10 +79,14 @@ def datatable(user_email, user_tool, pmids, keywords):
     bar_plot(combined_dataframes, pmids)
     radar_plot(combined_dataframes, pmids)
     for x in combined_dataframes:
-        data = combined_dataframes.drop(columns=['Abstract']).iloc
+        data = combined_dataframes.drop(columns=['Abstract','DOI','Full text link']).iloc
+    for x in combined_dataframes['Full text link']:
+        fulltext_data = combined_dataframes['Full text link'].iloc
+    for x in combined_dataframes['DOI']:
+        doi_data = combined_dataframes['DOI'].iloc
     for x in combined_dataframes['Abstract']:
         abstract_data = combined_dataframes['Abstract'].iloc
-    return render_template('datatable.html', data=data, abstract_data=abstract_data, num_rows=len(pmids))
+    return render_template('datatable.html', data=data, abstract_data=abstract_data, fulltext_data=fulltext_data, doi_data=doi_data, num_rows=len(pmids))
 
 @app.route('/process_input',methods=['POST'])
 def process_input():

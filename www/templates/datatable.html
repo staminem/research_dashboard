@@ -21,7 +21,7 @@
                 <th>Keyword match ratio (%)</th>
                 <th>Distance to me (km)</th>
                 <th>MeSH Terms</th>
-                <th>DOI</th>
+                <th>DOI (Full text)</th>
                 <th>Abstract</th>
             </tr>
             </thead>
@@ -31,16 +31,18 @@
                         {% for cell in data[row] %}
                             <td>{{ cell }}</td>
                         {% endfor %}
+                        <td><a href="{{ fulltext_data[row] }}" target="_blank">{{ doi_data[row] }}</a> </td>
                         <td><a tabindex="0" id="abstract" class="btn btn-secondary" role="button" data-bs-toggle="popover" data-bs-placement="left" title="Abstract" data-bs-content="{{ abstract_data[row] }}">Abstract</a></td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
         <br>
-    <button type="button" class="btn btn-primary" data-bs-toggle="button" onclick="aradarPlot()">Toggle Radar Plot</button>
-    <button type="button" class="btn btn-primary" data-bs-toggle="button" onclick="abarPlot()">Toggle Bar Plot</button>
-    <iframe id="radarPlot" name="radarPlot" src="{{ url_for('static', filename='dashboard_plot.html') }}" width="0%", height="0px"></iframe>
-    <br>
-    <iframe id="barPlot" name="barPlot" src="{{ url_for('static', filename='bar_plot.html') }}" width="0%", height="0px"></iframe>
+        <button type="button" class="btn btn-primary" data-bs-toggle="button" onclick="aradarPlot()">Show/hide Radar Plot</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="button" onclick="abarPlot()">Show/hide Bar Plot</button>
+        <br>
+        <iframe id="radarPlot" name="radarPlot" src="{{ url_for('static', filename='dashboard_plot.html') }}" width="0%", height="0px"></iframe>
+        <br>
+        <iframe id="barPlot" name="barPlot" src="{{ url_for('static', filename='bar_plot.html') }}" width="0%", height="0px"></iframe>
     </div>
 {% endblock %}
