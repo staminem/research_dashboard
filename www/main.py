@@ -1,9 +1,5 @@
 from flask import Flask, render_template, request
 
-#29189291 33343912 28648412 605691 33822812 32930074 33151926
-
-#local anaesthetics epidural analgesia acetaminophen pain Covid-19 SARS-cov-2
-
 app = Flask(__name__)
 
 @app.route('/')
